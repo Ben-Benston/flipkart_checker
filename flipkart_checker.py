@@ -1,14 +1,22 @@
-import urllib2
-import re
-import subprocess
+import requests
+from win10toast import ToastNotifier
+
 # URL to the product
-flipkart_url = '<ENTER THE URL HERE>'
-flipkart_fetch = urllib2.urlopen(flipkart_url).read()
+flipkart_url = "<ENTER THE URL HERE>"
 
-product = re.findall('This item is currently out of stock', flipkart_fetch);
+# Fetch the HTML content
+response = requests.get(flipkart_url)
+html_content = response.text
 
-if len(product) == 0: 
-	message = "The Product is back in stock at Flipkart "
-else:
-	message = "Product is not available yet"
-subprocess.Popen(['notify-send', message])
+# Search for the availability status string in the HTML content
+if "This item is currently out of stock" not in html_content:
+    # Create a ToastNotifier object
+    toaster = ToastNotifier()
+
+    # Show toast notification
+    toaster.show_toast(
+        "Flipkart Product Notification",
+        "The Product is back in stock at Flipkart",
+        duration=10,
+    )
+
